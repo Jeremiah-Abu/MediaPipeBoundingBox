@@ -4,19 +4,15 @@ import time
 import numpy as np
 import mediapipe as mp
 
-mphands = mp.solutions.hands
-hands = mphands.Hands()
-mp_drawing = mp.solutions.drawing_utils
-
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0) 
 
 _, frame = cap.read()
 
-h, w, c = frame.shape
+h, w, c = frame.shape #determine height width and channel of cam
 
 # used to record the time when we processed last frame
 prev_frame_time = 0
@@ -30,11 +26,11 @@ with mp_hands.Hands(
     min_tracking_confidence=0.5) as hands:
     while True:
         _, frame = cap.read()
-        frame = cv2.flip(frame,1)
+        frame = cv2.flip(frame,1) #Mirror screen
         
-        framergb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        framergb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) 
         result = hands.process(framergb)
-        black = np.zeros((h,w,c), np.uint8)
+        black = np.zeros((h,w,c), np.uint8) #create black image with same dimentions as webcam
         hand_landmarks = result.multi_hand_landmarks
         if hand_landmarks:
             for handLMs in hand_landmarks:
@@ -52,8 +48,7 @@ with mp_hands.Hands(
                         y_max = y
                     if y < y_min:
                         y_min = y
-                cv2.rectangle(black, (x_min-15, y_min-15), (x_max+15, y_max+15), (0, 255, 0), 2)
-                #mp_drawing.draw_landmarks(frame, handLMs, mphands.HAND_CONNECTIONS)
+                cv2.rectangle(black, (x_min-15, y_min-15), (x_max+15, y_max+15), (0, 255, 0), 2) #display bounding box arround and
                 mp_drawing.draw_landmarks(
                         black,
                         handLMs,
@@ -64,9 +59,9 @@ with mp_hands.Hands(
         new_frame_time = time.time()
         fps = 1/(new_frame_time-prev_frame_time)
         prev_frame_time = new_frame_time
-        fps = int(fps)
-        fps = str(fps)
-        cv2.putText(black, fps, (7, 70), font, 3, (100, 255, 0), 3, cv2.LINE_AA)
+        fps = int(fps) #convert fps to integer
+        fps = str(fps) #convert fps to string
+        cv2.putText(black, fps, (7, 70), font, 3, (100, 255, 0), 3, cv2.LINE_AA) #print fps
         
         cv2.imshow("Frame", black)
 
